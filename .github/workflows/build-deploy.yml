@@ -53,4 +53,4 @@ jobs:
             echo "Pulling image: $DOCKER_IMAGE_NAME" 
             docker pull $DOCKER_IMAGE_NAME:latest
             echo "Starting container: $DOCKER_CONTAINER_NAME" 
-            docker run --restart=always -d --name "$DOCKER_CONTAINER_NAME" -e OPENAI_API_KEY="$OPENAI_API_KEY" "$DOCKER_IMAGE_NAME:latest"
+            docker run --restart=always -d --name "$DOCKER_CONTAINER_NAME" -e OPENAI_API_KEY="$OPENAI_API_KEY" -p 40194:8000 "$DOCKER_IMAGE_NAME:latest"
