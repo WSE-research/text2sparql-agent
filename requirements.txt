@@ -1,0 +1,14 @@
+fastapi>=0.95.0
+uvicorn>=0.22.0
+pydantic>=2.0.0
+typing-extensions>=4.5.0
+langgraph
+langchain-core
+langchain-openai
+langchain
+langchain-community
+fuzzywuzzy
+SPARQLWrapper
+rdflib
+sentence-transformers
+faiss-cpu
