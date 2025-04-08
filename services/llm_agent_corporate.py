@@ -14,7 +14,7 @@ import json
 from services.llm_utils import el, Plan
 from services.ld_utils import execute, post_process
 from model.agent import PlanExecute
-from prompts.dbpedia import (
+from prompts.corporate import (
     system_prompt,
     last_task,
     planner_prompt_dct,
@@ -22,9 +22,9 @@ from prompts.dbpedia import (
 )
 
 
-class LLMAgentDBpedia:
+class LLMAgentCorporate:
     """
-    Implementation of an LLM agent that converts natural language to SPARQL over DBpedia.
+    Implementation of an LLM agent that converts natural language to SPARQL over corporate Eccenca knowledge graph.
     This will be replaced with an actual LLM implementation later.
     """
     
@@ -38,7 +38,7 @@ class LLMAgentDBpedia:
         ):
         """Initialize the LLM agent with any required configurations"""
         self.model_name = "text-to-sparql-mock"
-        self.sparql_endpoint = "http://141.57.8.18:40201/dbpedia/sparql"
+        self.sparql_endpoint = "http://141.57.8.18:40201/corporate/sparql"
         self.lang = lang
         self.embedding_model_name = embedding_model_name
         self.openai_model_name = openai_model_name
@@ -220,7 +220,7 @@ class LLMAgentDBpedia:
 
 
 if __name__ == "__main__":   
-    dbpedia_agent = LLMAgentDBpedia(
+    dbpedia_agent = LLMAgentCorporate(
         openai_model_name="gpt-4o-2024-05-13",
         embedding_model_name="intfloat/multilingual-e5-large",
         return_N=5,
