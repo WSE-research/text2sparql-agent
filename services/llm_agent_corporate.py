@@ -54,7 +54,7 @@ class LLMAgentCorporate:
         ### END Initialize embeddings
 
         ### START Load ICL VDB
-        icl_file_path = f"./data/datasets/qald_9_plus_train_dbpedia_{lang}.json"
+        icl_file_path = f"./data/datasets/corporate_{lang}.json"
         with open(icl_file_path, "r", encoding='utf-8') as f:
             self.icl_json_data = json.load(f)
 
