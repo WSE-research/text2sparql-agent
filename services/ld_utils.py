@@ -37,7 +37,14 @@ prefixes_list = [
     {"wdtn": "PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/>"},
     {"wdv": "PREFIX wdv: <http://www.wikidata.org/value/>"},
     {"wikibase": "PREFIX wikibase: <http://wikiba.se/ontology#>"},
-    {"xsd": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"}
+    {"xsd": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"},
+    {"pv": "PREFIX pv: <http://ld.company.org/prod-vocab/>"},
+    {"ecc": "PREFIX ecc: <https://ns.eccenca.com/>"},
+    {"void": "PREFIX void: <http://rdfs.org/ns/void#>"},
+    {"vann": "PREFIX vann: <http://purl.org/vocab/vann/>"},
+    {"dbp": "PREFIX dbp: <http://dbpedia.org/property/>"},
+    {"dbo": "PREFIX dbo: <http://dbpedia.org/ontology/>"},
+    {"dbr": "PREFIX dbr: <http://dbpedia.org/resource/>"},
 ]
 
 
@@ -109,11 +116,8 @@ def execute(query: str, endpoint_url: str = 'http://141.57.8.18:40201/dbpedia/sp
 
         query = '\n'.join([list(pref.values())[0] for pref in prefixes_list if list(pref.keys())[0] not in query_prefixes]) + '\n' + query
         
-        agent_header = {'User-Agent': 'wiki_parser_online/0.17.1 (https://deeppavlov.ai;'
-                                    ' info@deeppavlov.ai) deeppavlov/0.17.1'}
         sparql = SPARQLWrapper(endpoint_url)
-        sparql.timeout = 20
-        sparql.agent = str(agent_header)
+        sparql.timeout = 5
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         response = sparql.query().convert()
