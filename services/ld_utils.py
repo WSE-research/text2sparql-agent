@@ -6,37 +6,11 @@ from rdflib.plugins.sparql.parser import parseQuery
 
 
 prefixes_list = [
-    {"wd": "PREFIX wd: <http://www.wikidata.org/entity/>"},
-    {"bd": "PREFIX bd: <http://www.bigdata.com/rdf#>"},
-    {"cc": "PREFIX cc: <http://creativecommons.org/ns#>"},
-    {"dct": "PREFIX dct: <http://purl.org/dc/terms/>"},
-    {"geo": "PREFIX geo: <http://www.opengis.net/ont/geosparql#>"},
-    {"ontolex": "PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>"},
-    {"owl": "PREFIX owl: <http://www.w3.org/2002/07/owl#>"},
-    {"p": "PREFIX p: <http://www.wikidata.org/prop/>"},
-    {"pq": "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>"},
-    {"pqn": "PREFIX pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/>"},
-    {"pqv": "PREFIX pqv: <http://www.wikidata.org/prop/qualifier/value/>"},
-    {"pr": "PREFIX pr: <http://www.wikidata.org/prop/reference/>"},
-    {"prn": "PREFIX prn: <http://www.wikidata.org/prop/reference/value-normalized/>"},
-    {"prov": "PREFIX prov: <http://www.w3.org/ns/prov#>"},
-    {"prv": "PREFIX prv: <http://www.wikidata.org/prop/reference/value/>"},
-    {"ps": "PREFIX ps: <http://www.wikidata.org/prop/statement/>"},
-    {"psn": "PREFIX psn: <http://www.wikidata.org/prop/statement/value-normalized/>"},
-    {"psv": "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>"},
     {"rdf": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"},
     {"rdfs": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"},
     {"foaf": "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"},
     {"schema": "PREFIX schema: <http://schema.org/>"},
     {"skos": "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"},
-    {"wdata": "PREFIX wdata: <http://www.wikidata.org/wiki/Special:EntityData/>"},
-    {"wdno": "PREFIX wdno: <http://www.wikidata.org/prop/novalue/>"},
-    {"wdref": "PREFIX wdref: <http://www.wikidata.org/reference/>"},
-    {"wds": "PREFIX wds: <http://www.wikidata.org/entity/statement/>"},
-    {"wdt": "PREFIX wdt: <http://www.wikidata.org/prop/direct/>"},
-    {"wdtn": "PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/>"},
-    {"wdv": "PREFIX wdv: <http://www.wikidata.org/value/>"},
-    {"wikibase": "PREFIX wikibase: <http://wikiba.se/ontology#>"},
     {"xsd": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"},
     {"pv": "PREFIX pv: <http://ld.company.org/prod-vocab/>"},
     {"ecc": "PREFIX ecc: <https://ns.eccenca.com/>"},
@@ -103,9 +77,15 @@ def extract_code_blocks(text):
 def post_process(result):
     blocks = extract_code_blocks(result)
     if len(blocks) > 0:
-        return blocks[0].strip()
+        query = blocks[0].strip()
     else:
-        return result.strip()
+        query = result.strip()
+    
+    parse_object = parseQuery(query)
+    query_prefixes = [prefix.prefix for prefix in parse_object[0]] if len(parse_object[0]) > 0 else []
+    query = '\n'.join([list(pref.values())[0] for pref in prefixes_list if list(pref.keys())[0] not in query_prefixes]) + '\n' + query
+
+    return query
 
 def execute(query: str, endpoint_url: str = 'http://141.57.8.18:40201/dbpedia/sparql'):
     try:

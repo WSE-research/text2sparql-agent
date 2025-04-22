@@ -11,7 +11,7 @@ from typing import List
 import os
 import json
 
-from services.llm_utils import el, Plan
+from services.llm_utils import el, Plan, get_expected_answer_type
 from services.ld_utils import execute, post_process
 from model.agent import PlanExecute
 from prompts.dbpedia import (
@@ -128,11 +128,25 @@ class LLMAgentDBpedia:
             "gave_feedback": True
         }
     
+    def _eat_step(self, state: PlanExecute):
+        try:
+            expected_answer_type = get_expected_answer_type(state['input'], self.llm)
+            state['chat_history'].append(AIMessage(expected_answer_type["expected_answer_type"]["eat"])) # update chat history
+        except Exception as e:
+            pass
+
+        return {
+            "gave_feedback": state["gave_feedback"]
+        }
+    
     def _init_workflow(self):
         workflow = StateGraph(PlanExecute)
 
         # Add the plan node
         workflow.add_node("planner", self._plan_step)
+
+        # Add the eat step
+        workflow.add_node("eat", self._eat_step)
 
         # Add the execution step
         workflow.add_node("agent", self._execute_step)
@@ -143,7 +157,8 @@ class LLMAgentDBpedia:
         workflow.set_entry_point("planner")
 
         # From plan we go to agent
-        workflow.add_edge("planner", "agent")
+        workflow.add_edge("planner", "eat")
+        workflow.add_edge("eat", "agent")
 
         workflow.add_conditional_edges(
             "agent",

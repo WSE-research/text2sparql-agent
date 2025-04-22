@@ -1,9 +1,30 @@
+import json
+import logging
+import ast
+import random
+
+from typing import List
+
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import tool
-from typing import List
-import random
-# from ld_utils import search_entity, falcon_rel
 
+
+
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
+
+KNOWN_EAT_MAPPINGS = [
+    ["http://www.w3.org/2001/XMLSchema#integer", "integer"],
+    ["http://www.w3.org/2001/XMLSchema#boolean", "boolean"],
+    ["http://www.w3.org/2001/XMLSchema#date", "date"],
+    ["http://www.w3.org/2001/XMLSchema#dateTime", "dateTime"],
+    ["http://www.w3.org/2001/XMLSchema#time", "time"],
+    ["http://www.w3.org/2001/XMLSchema#string", "string", "literal"],
+    ["http://www.w3.org/2001/XMLSchema#anyURI", "uri", "resource", "http://www.w3.org/2000/01/rdf-schema#Resource",
+        "http://www.w3.org/2000/01/rdf-schema#List", "http://www.w3.org/2000/01/rdf-schema#Container", "http://www.w3.org/2000/01/rdf-schema#Collection", "http://www.w3.org/2000/01/rdf-schema#Bag", "http://www.w3.org/2000/01/rdf-schema#Set"],
+    ["http://www.w3.org/2001/XMLSchema#double", "http://www.w3.org/2001/XMLSchema#decimal",
+        "http://www.w3.org/2001/XMLSchema#float", "double", "decimal", "float"],
+]
 
 class Plan(BaseModel):
     """Plan to follow in future"""
@@ -114,3 +135,112 @@ def construct_shot(idx, json_data):
             pass
         
     return shot
+
+def eat_json_answer_template(question, eat, confidence):
+    return {
+        "question": question,
+        "expected_answer_type": {
+            "eat": eat,
+            "confidence": confidence
+        }
+    }
+
+expected_answer_type_questions_and_expected_answer_types = [
+    {"question": "Show me the birthday of Friedrich Schiller", "expected_answer_type": eat_json_answer_template(
+        "Show me the birthday of Friedrich Schiller", "http://www.w3.org/2001/XMLSchema#date", 0.95)},
+    {"question": "What is the capital of Germany?", "expected_answer_type": eat_json_answer_template(
+        "What is the capital of Germany?", "http://www.w3.org/2000/01/rdf-schema#Resource", 0.95)},
+    {"question": "What is the population of Berlin?", "expected_answer_type": eat_json_answer_template(
+        "What is the population of Berlin?", "http://www.w3.org/2001/XMLSchema#integer", 0.95)},
+    {"question": "What is the speed of light?", "expected_answer_type": eat_json_answer_template(
+        "What is the speed of light?", "http://www.w3.org/2001/XMLSchema#decimal", 0.95)},
+    {"question": "Is the capital of Germany Berlin?", "expected_answer_type": eat_json_answer_template(
+        "Is the capital of Germany Berlin?", "http://www.w3.org/2001/XMLSchema#boolean", 0.95)},
+]
+
+def get_expected_answer_type(text, llm):
+    """
+    Perform Expected Answer Type (EAT) Analysis on the given text using a language model.
+    Args:
+        text (str): The input text to analyze for expected answer type.
+    Returns:
+        resource:datatype. If the response cannot be parsed as JSON, an empty list is returned.
+    Example:
+        >>> get_expected_answer_type("Show me the birthday of Friedrich Schiller")
+        ["xsd:date"]
+    Note:
+        This function uses a language model to perform a EAT analysis and expects the model to return the recognized 
+        expected answer type in a structured JSON format. If the response is not valid JSON, an error is logged and an empty list is returned.
+    """
+
+    # example_string = "Show me the birthday of Friedrich Schiller"
+    # assistant_docstring = """["xsd:date"]"""
+
+    logging.info(
+        "get_expected_answer_type: Calling OpenAI API for question: '%s'", text)
+
+    if text is None or text == "":
+        logging.error("get_expected_answer_type: Text is None or empty")
+        raise ValueError("Text is None or empty")
+
+    messages = [
+        (
+            "system",
+            """You are a Expected Answer Type Tool.
+    Recognize named the expected answer type of the given question and output as RDF datatype and your confidence score.
+    **Output ONLY the structured data.**
+    Below is a text for you to analyze."""
+        ),
+        (
+            "human", 
+            expected_answer_type_questions_and_expected_answer_types[0]["question"]
+        ),
+        (
+            "assistant",
+            f"{expected_answer_type_questions_and_expected_answer_types[0]['expected_answer_type']}"
+        ),
+        (
+            "human",
+            expected_answer_type_questions_and_expected_answer_types[1]["question"]
+        ),
+        (
+            "assistant",
+            f"{expected_answer_type_questions_and_expected_answer_types[1]['expected_answer_type']}"
+        ),
+        (
+            "human", 
+            expected_answer_type_questions_and_expected_answer_types[2]["question"]
+        ),
+        (
+            "assistant",
+            f"{expected_answer_type_questions_and_expected_answer_types[2]['expected_answer_type']}"
+        ),
+        (
+            "human", 
+            text
+        )
+    ]
+
+    result_text = llm.invoke(messages).content
+
+    # parse the result
+    try:
+        # load JSON data from result_text using ' as the quote character
+        result = ast.literal_eval(result_text)
+        logging.info("LLM EAT result for question '%s': %s", text, result)
+    except json.JSONDecodeError:
+        logging.error("JSONDecodeError: %s", result_text)
+        return ["None"]
+
+    eat = result.get("expected_answer_type", {}).get("eat", None)
+    confidence = result.get("expected_answer_type", {}).get("confidence", None)
+
+    if eat is None:
+        logging.error("LLM EAT result contains invalid eat: %s", result)
+        raise ValueError("LLM EAT result contains invalid eat: %s", result)
+    if confidence is None:
+        logging.error("LLM EAT result contains invalid confidence: %s", result)
+        raise ValueError(
+            "LLM EAT result contains invalid confidence: %s", result)
+
+    return result
