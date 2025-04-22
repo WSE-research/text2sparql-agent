@@ -5,7 +5,7 @@
   },
   {
     "question": "Give me all bills of materials",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?bom ?name WHERE { ?bom a pv:BillOfMaterial ; rdfs:label ?name . }"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?bom WHERE { ?bom a pv:BillOfMaterial ; rdfs:label ?name . }"
   },
   {
     "question": "List products compatible to \"N560-4369045 - Resistor Compensator\"",
@@ -17,19 +17,19 @@
   },
   {
     "question": "Give me all hardware pieces deeper than 15mm",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware ?depth WHERE { ?hardware a pv:Hardware ; pv:depth_mm ?depth . FILTER (?depth > 15)}"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware WHERE { ?hardware a pv:Hardware ; pv:depth_mm ?depth . FILTER (?depth > 15)}"
   },
   {
     "question": "What are the hardware pieces higher than 20mm",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware ?height WHERE { ?hardware a pv:Hardware ; pv:height_mm ?height . FILTER (?height > 20) }"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware WHERE { ?hardware a pv:Hardware ; pv:height_mm ?height . FILTER (?height > 20) }"
   },
   {
     "question": "I need all hardware pieces heavier than 5 grams",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware ?weight WHERE { ?hardware a pv:Hardware ; pv:weight_g ?weight . FILTER (?weight > 5) }"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware WHERE { ?hardware a pv:Hardware ; pv:weight_g ?weight . FILTER (?weight > 5) }"
   },
   {
     "question": "Give me all hardware pieces with a reliability index of more than 0.8",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware ?reliability WHERE { ?hardware a pv:Hardware ; pv:reliabilityIndex ?reliability . FILTER (?reliability > 0.8) }"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware WHERE { ?hardware a pv:Hardware ; pv:reliabilityIndex ?reliability . FILTER (?reliability > 0.8) }"
   },
   {
     "question": "List all resistor compensators",
@@ -41,7 +41,7 @@
   },
   {
     "question": "What is the address of the supplier of \"E226-4279524 - Resistor Compensator\"",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> PREFIX prodi: <http://ld.company.org/prod-instances/> SELECT ?locality ?country WHERE { prodi:hw-E226-4279524 pv:hasSupplier ?supplier . ?supplier pv:addressLocality ?locality ; pv:addressCountry ?country . }"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> PREFIX prodi: <http://ld.company.org/prod-instances/> SELECT ?locality WHERE { prodi:hw-E226-4279524 pv:hasSupplier ?supplier . ?supplier pv:addressLocality ?locality ; pv:addressCountry ?country . }"
   },
   {
     "question": "What is the name of the supplier of \"E226-4279524 - Resistor Compensator\"",
@@ -49,11 +49,11 @@
   },
   {
     "question": "Give me all hardware pieces for less than 5 EUR",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware ?priceAmount WHERE { ?hardware a pv:Hardware ; pv:price ?price . ?price pv:amount ?priceAmount ; pv:currency \"EUR\" . FILTER (?priceAmount < 5) }"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware WHERE { ?hardware a pv:Hardware ; pv:price ?price . ?price pv:amount ?priceAmount ; pv:currency \"EUR\" . FILTER (?priceAmount < 5) }"
   },
   {
     "question": "Give me all the gauges for less than 7 EUR",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> PREFIX prodi: <http://ld.company.org/prod-instances/> SELECT ?gauge ?priceAmount WHERE { ?gauge a pv:Hardware ; pv:hasCategory prodi:prod-cat-Gauge ; pv:price ?price . ?price pv:amount ?priceAmount ; pv:currency \"EUR\" . FILTER (?priceAmount < 7) }"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> PREFIX prodi: <http://ld.company.org/prod-instances/> SELECT ?gauge WHERE { ?gauge a pv:Hardware ; pv:hasCategory prodi:prod-cat-Gauge ; pv:price ?price . ?price pv:amount ?priceAmount ; pv:currency \"EUR\" . FILTER (?priceAmount < 7) }"
   },
   {
     "question": "List all product categories",
