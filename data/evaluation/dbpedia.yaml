@@ -1,0 +1,16 @@
+---
+dataset:
+  id: https://text2sparql.aksw.org/2025/dbpedia/
+questions:
+
+  - question:
+      en: Where was Angela Merkel born?
+      de: Wo wurde Angela Merkel geboren?
+
+  - question:
+      en: Who is the author of the Great Gatsby?
+      de: Wer ist der Autor von Der große Gatsby?
+
+  - question:
+      en: What is the capital of France?
+      de: Was ist die Hauptstadt von Frankreich?
