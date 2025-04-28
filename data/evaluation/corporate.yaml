@@ -1,0 +1,16 @@
+---
+dataset:
+  id: https://text2sparql.aksw.org/2025/corporate/
+questions:
+
+  - question:
+      en: Give me all bills of materials
+      de: Gib mir alle Stücklisten
+
+  - question:
+      en: Give me all hardware pieces deeper than 28mm
+      de: Geben Sie mir alle Hardwareteile, die tiefer als 28 mm sind
+
+  - question:
+      en: I need all hardware pieces heavier than 5 grams
+      de: Ich brauche alle Hardwareteile, die schwerer als 5 Gramm sind
