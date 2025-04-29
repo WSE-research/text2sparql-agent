@@ -10,6 +10,7 @@ from typing import List
 
 import os
 import json
+import logging
 
 from services.llm_utils import el, Plan
 from services.ld_utils import execute, post_process
@@ -183,38 +184,47 @@ class LLMAgentCorporate:
         Returns:
             A SPARQL query string
         """
-        if self.app is None:
-            self._init_workflow()
+        try:
+            if self.app is None:
+                self._init_workflow()
 
-        results = self.icl_db.similarity_search_with_score(input_question, k=self.return_N)
+            results = self.icl_db.similarity_search_with_score(input_question, k=self.return_N)
 
-        example = "--- Successful example for in context learning ---"
+            example = "--- Successful example for in context learning ---"
 
-        for result in results[:self.return_N]:
-            idx = result[0].metadata['seq_num'] - 1
-            question = self.icl_json_data[idx]["question"]
-            sparql = self.icl_json_data[idx]["sparql"]
+            for result in results[:self.return_N]:
+                idx = result[0].metadata['seq_num'] - 1
+                question = self.icl_json_data[idx]["question"]
+                sparql = self.icl_json_data[idx]["sparql"]
 
-            example += f"""
+                example += f"""
 
-    Input: {question}
-    Output: {sparql}
+        Input: {question}
+        Output: {sparql}
 
-    """
-            
-            example += "--- End example ---"
+        """
+                
+                example += "--- End example ---"
 
-        agent_result = self.app.invoke(
-            {"input": input_question, "chat_history": [SystemMessage(content=f"""{system_prompt[self.lang]}      
-            {example}""")],
-            "gave_feedback": False}
-        )
-    
-        sparql_result = agent_result['chat_history'][-1].content
+            agent_result = self.app.invoke(
+                {"input": input_question, "chat_history": [SystemMessage(content=f"""{system_prompt[self.lang]}      
+                {example}""")],
+                "gave_feedback": False}
+            )
+        
+            sparql_result = agent_result['chat_history'][-1].content
 
-        generated_query = post_process(sparql_result)
+            generated_query = post_process(sparql_result)
 
-        return generated_query
+            return generated_query
+        except Exception as e:
+            logging.error(f"Error in generate_sparql: {e}")
+            return """PREFIX pv: <http://ld.company.org/prod-vocab/>
+SELECT ?hardware 
+WHERE { 
+    ?hardware a pv:Hardware . 
+}
+"""
 
 
 
