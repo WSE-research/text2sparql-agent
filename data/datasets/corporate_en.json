@@ -13,7 +13,7 @@
   },
   {
     "question": "Give me all hardware pieces",
-    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware WHERE { ?hardware a pv:Hardware .}"
+    "sparql": "PREFIX pv: <http://ld.company.org/prod-vocab/> SELECT ?hardware WHERE { ?hardware a pv:Hardware . }"
   },
   {
     "question": "Give me all hardware pieces deeper than 15mm",

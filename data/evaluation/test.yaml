@@ -1,0 +1,14 @@
+---
+dataset:
+  id: https://text2sparql.aksw.org/2025/corporate/
+questions:
+
+  - question:
+      en: In which department is Ms. Müller?
+      de: In welcher Abteilung ist Frau Müller?
+
+  - question:
+      de: Was ist der Sinn des Lebens?
+
+  - question:
+      de: Wieviele Einwohner hat Leipzig?
