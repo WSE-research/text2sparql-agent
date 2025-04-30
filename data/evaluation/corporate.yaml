@@ -14,3 +14,27 @@ questions:
   - question:
       en: I need all hardware pieces heavier than 5 grams
       de: Ich brauche alle Hardwareteile, die schwerer als 5 Gramm sind
+  
+  - question:
+      en: Which products are categorized as Hardware and what physical dimensions (height, width, depth) can be stored for them?
+      de: Welche Produkte sind als Hardware kategorisiert und welche physischen Abmessungen (Höhe, Breite, Tiefe) können für sie gespeichert werden?
+  
+  - question:
+      en: How many suppliers exist?
+      de: Wie viele Lieferanten gibt es?
+
+  - question:
+      en: How many members has each department?
+      de: Wie viele Mitglieder hat jede Abteilung?
+
+  - question:
+      en: What contact information can be stored for Agents (including Employees) in this knowledge graph?
+      de: Welche Kontaktdaten können für Agenten (einschließlich Mitarbeiter) in diesem Wissensgraphen gespeichert werden?
+
+  - question:
+      en: What information is captured about Suppliers, and how are they connected to Products?
+      de: Welche Informationen werden über Lieferanten erfasst und wie sind sie mit Produkten verbunden?
+
+  - question:
+      en: How are Product Managers connected to Products in the data model, and what is their relationship to other Employees?
+      de: Wie sind Produktmanager im Datenmodell mit Produkten verbunden und welche Beziehung haben sie zu anderen Mitarbeitern?
