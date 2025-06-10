@@ -1,5 +1,6 @@
 import json
 import logging
+import requests
 import ast
 import random
 
@@ -36,8 +37,26 @@ class Plan(BaseModel):
 class NELInput(BaseModel):
     ne_list: list = Field(description="should be a list of named entities (strings) to be linked to the Wikidata URIs")
 
+
+def falcon_external(text: str):
+    url = 'https://labs.tib.eu/falcon/falcon2/api'
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    data = {
+        'text': text,
+    }
+    params = {
+        'mode': 'long',
+        'db': '1'
+    }
+
+    response = requests.post(url, headers=headers, json=data, params=params, timeout=5)
+
+    return response.json()
+
 @tool("wikidata_el", args_schema=NELInput)
-def el(ne_list: str) -> list:
+def wikidata_el(ne_list: list) -> list:
     """Performs entity linking to Wikidata based on the provided list of named entity strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
     nel_list = []
     N = 5
@@ -50,6 +69,18 @@ def el(ne_list: str) -> list:
         nel_list += falcon_entities
         nel_list += relations
 
+    return nel_list
+
+@tool("dbpedia_el", args_schema=NELInput)
+def dbpedia_el(ne_list: list) -> list:
+    """Performs entity linking to DBpedia based on the provided list of named entity strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
+    nel_list = []
+    N = 5
+    for ne in ne_list[:N]:
+        entities, relations = falcon_external(text=ne).get("entities_dbpedia", []), falcon_external(text=ne).get("relations_dbpedia", [])
+        nel_list += entities
+        nel_list += relations
+        
     return nel_list
 
 def nel(ne_list: str) -> list:

@@ -12,7 +12,7 @@ import os
 import json
 import logging
 
-from services.llm_utils import el, Plan, get_expected_answer_type
+from services.llm_utils import dbpedia_el, Plan, get_expected_answer_type
 from services.ld_utils import execute, post_process
 from model.agent import PlanExecute
 from prompts.dbpedia import (
@@ -34,7 +34,7 @@ class LLMAgentDBpedia:
             openai_model_name: str = "gpt-4o-2024-05-13",
             embedding_model_name: str = "intfloat/multilingual-e5-large",
             return_N: int = 5,
-            tools: List = [el],
+            tools: List = [dbpedia_el],
             lang: str = "en"
         ):
         """Initialize the LLM agent with any required configurations"""
