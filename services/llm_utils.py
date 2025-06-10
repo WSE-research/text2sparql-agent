@@ -125,7 +125,7 @@ def el_corporate(ne_list: list) -> list:
     return nel_list
 
 @tool("corporate_rel", args_schema=RELInput)
-def rel_corporate(rel_list: str) -> list:
+def rel_corporate(rel_list: list) -> list:
     """Performs relation linking to Corporate KG based on the provided list of relations strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
     nel_list = []
     N = 5
