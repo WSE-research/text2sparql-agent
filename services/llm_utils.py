@@ -79,7 +79,9 @@ def dbpedia_el(ne_list: list) -> list:
     nel_list = []
     N = 5
     for ne in ne_list[:N]:
-        entities, relations = falcon_external(text=ne).get("entities_dbpedia", []), falcon_external(text=ne).get("relations_dbpedia", [])
+        falcon_result = falcon_external(text=ne)
+        entities = falcon_result.get("entities_dbpedia", [])
+        relations = falcon_result.get("relations_dbpedia", [])
         nel_list += entities
         nel_list += relations
         
