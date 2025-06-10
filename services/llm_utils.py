@@ -37,6 +37,8 @@ class Plan(BaseModel):
 class NELInput(BaseModel):
     ne_list: list = Field(description="should be a list of named entities (strings) to be linked to the Wikidata URIs")
 
+class RELInput(BaseModel):
+    rel_list: list = Field(description="should be a list of relations (strings) to be linked to the Knowledge Graph  URIs")
 
 def falcon_external(text: str):
     url = 'https://labs.tib.eu/falcon/falcon2/api'
@@ -81,6 +83,61 @@ def dbpedia_el(ne_list: list) -> list:
         nel_list += entities
         nel_list += relations
         
+    return nel_list
+
+def get_corporate_entities(query: str, is_relation: bool) -> list:
+    """
+    Make a GET request to the Corporate entity service and return the parsed response
+    """
+    try:
+        if is_relation:
+            url = f"http://141.57.8.18:9199/relations/?query={query}"
+        else:
+            url = f"http://141.57.8.18:9199/entities/?query={query}"
+        headers = {'accept': 'application/json'}
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logging.error(f"Error fetching entities: {response.status_code}")
+            return []
+    except Exception as e:
+        logging.error(f"Exception in get_corporate_entities: {str(e)}")
+        return []
+
+@tool("corporate_el", args_schema=NELInput)
+def el_corporate(ne_list: str) -> list:
+    """Performs entity linking to Corporate based on the provided list of named entity strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
+    nel_list = []
+    N = 5
+    for ne in ne_list[:N]:
+        entities = get_corporate_entities(ne, False)
+        for entity in entities:
+            nel_list.append({
+                "label": entity.get("label", ""),
+                "uri": entity.get("uri", ""),
+                "score": entity.get("score", 0),
+                "extra_score": entity.get("extra_score", 0)
+            })
+
+    return nel_list
+
+@tool("corporate_rel", args_schema=RELInput)
+def rel_corporate(rel_list: str) -> list:
+    """Performs relation linking to Corporate KG based on the provided list of relations strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
+    nel_list = []
+    N = 5
+    for rel in rel_list[:N]:
+        relations = get_corporate_entities(rel, True)
+        for relation in relations:
+            nel_list.append({
+                "label": relation.get("label", ""),
+                "uri": relation.get("uri", ""),
+                "score": relation.get("score", 0),
+                "extra_score": relation.get("extra_score", 0)
+            })
+
     return nel_list
 
 def nel(ne_list: str) -> list:

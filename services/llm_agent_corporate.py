@@ -12,7 +12,7 @@ import os
 import json
 import logging
 
-from services.llm_utils import el, Plan
+from services.llm_utils import el_corporate, rel_corporate, Plan
 from services.ld_utils import execute, post_process
 from model.agent import PlanExecute
 from prompts.corporate import (
@@ -34,7 +34,7 @@ class LLMAgentCorporate:
             openai_model_name: str = "gpt-4o-2024-05-13",
             embedding_model_name: str = "intfloat/multilingual-e5-large",
             return_N: int = 5,
-            tools: List = [el],
+            tools: List = [el_corporate, rel_corporate],
             lang: str = "en"
         ):
         """Initialize the LLM agent with any required configurations"""
