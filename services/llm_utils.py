@@ -91,14 +91,14 @@ def get_corporate_entities(query: str, is_relation: bool) -> list:
     """
     try:
         if is_relation:
-            url = f"http://141.57.8.18:9199/relations/?query={query}"
+            url = f"http://141.57.8.18:9199/corporate/relations/?query={query}"
         else:
-            url = f"http://141.57.8.18:9199/entities/?query={query}"
+            url = f"http://141.57.8.18:9199/corporate/entities/?query={query}"
         headers = {'accept': 'application/json'}
         response = requests.get(url, headers=headers)
         
         if response.status_code == 200:
-            return response.json()
+            return response.json()[:3]
         else:
             logging.error(f"Error fetching entities: {response.status_code}")
             return []
