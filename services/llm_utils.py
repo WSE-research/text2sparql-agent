@@ -108,7 +108,7 @@ def get_corporate_entities(query: str, is_relation: bool) -> list:
         return []
 
 @tool("corporate_el", args_schema=NELInput)
-def el_corporate(ne_list: str) -> list:
+def el_corporate(ne_list: list) -> list:
     """Performs entity linking to Corporate based on the provided list of named entity strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
     nel_list = []
     N = 5
