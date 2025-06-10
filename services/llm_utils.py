@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import requests
@@ -79,7 +80,9 @@ def dbpedia_el(ne_list: list) -> list:
     nel_list = []
     N = 5
     for ne in ne_list[:N]:
-        entities, relations = falcon_external(text=ne).get("entities_dbpedia", []), falcon_external(text=ne).get("relations_dbpedia", [])
+        falcon_result = falcon_external(text=ne)
+        entities = falcon_result.get("entities_dbpedia", [])
+        relations = falcon_result.get("relations_dbpedia", [])
         nel_list += entities
         nel_list += relations
         
@@ -90,10 +93,14 @@ def get_corporate_entities(query: str, is_relation: bool) -> list:
     Make a GET request to the Corporate entity service and return the parsed response
     """
     try:
+        base_url = os.environ.get("CORPORATE_SERVICE_BASE_URL", "http://141.57.8.18:9199")
+        
         if is_relation:
-            url = f"http://141.57.8.18:9199/corporate/relations/?query={query}"
+
+            url = f"{base_url}/corporate/relations/?query={query}"
         else:
-            url = f"http://141.57.8.18:9199/corporate/entities/?query={query}"
+            url = f"{base_url}/corporate/entities/?query={query}"
+
         headers = {'accept': 'application/json'}
         response = requests.get(url, headers=headers)
         
@@ -107,7 +114,7 @@ def get_corporate_entities(query: str, is_relation: bool) -> list:
         return []
 
 @tool("corporate_el", args_schema=NELInput)
-def el_corporate(ne_list: str) -> list:
+def el_corporate(ne_list: list) -> list:
     """Performs entity linking to Corporate based on the provided list of named entity strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
     nel_list = []
     N = 5
@@ -124,7 +131,7 @@ def el_corporate(ne_list: str) -> list:
     return nel_list
 
 @tool("corporate_rel", args_schema=RELInput)
-def rel_corporate(rel_list: str) -> list:
+def rel_corporate(rel_list: list) -> list:
     """Performs relation linking to Corporate KG based on the provided list of relations strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
     nel_list = []
     N = 5
