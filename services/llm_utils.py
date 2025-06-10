@@ -90,10 +90,11 @@ def get_corporate_entities(query: str, is_relation: bool) -> list:
     Make a GET request to the Corporate entity service and return the parsed response
     """
     try:
+        base_url = os.environ.get("CORPORATE_SERVICE_BASE_URL", "http://141.57.8.18:9199")
         if is_relation:
-            url = f"http://141.57.8.18:9199/relations/?query={query}"
+            url = f"{base_url}/relations/?query={query}"
         else:
-            url = f"http://141.57.8.18:9199/entities/?query={query}"
+            url = f"{base_url}/entities/?query={query}"
         headers = {'accept': 'application/json'}
         response = requests.get(url, headers=headers)
         
