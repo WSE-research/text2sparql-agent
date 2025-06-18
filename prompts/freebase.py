@@ -6,6 +6,7 @@ last_task = {
     "en": """Make sure that the query is formatted correctly. No extra text. No markdown. Just plain SPARQL query.
 Determine whether to output a URI (SELECT ?uri), number (COUNT), date, boolean (ASK), string (SELECT ?label)
 DON'T USE "SERVICE wikibase:label"
+Use this prefix "PREFIX ns: <http://rdf.freebase.com/ns/>"
 """
 }
 

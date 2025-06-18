@@ -19,6 +19,7 @@ prefixes_list = [
     {"dbp": "PREFIX dbp: <http://dbpedia.org/property/>"},
     {"dbo": "PREFIX dbo: <http://dbpedia.org/ontology/>"},
     {"dbr": "PREFIX dbr: <http://dbpedia.org/resource/>"},
+    {"ns": "PREFIX ns: <http://rdf.freebase.com/ns/>"},
 ]
 
 

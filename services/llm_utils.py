@@ -56,15 +56,15 @@ def el(ne_list: str) -> list:
 
     return nel_list
 
-def get_freebase_entities(query: str, is_relation: bool) -> list:
+def get_freebase_entities(query: str, is_property: bool) -> list:
     """
     Make a GET request to the Freebase entity service and return the parsed response
     """
     try:
-        if is_relation:
-            url = f"http://141.57.8.18:9199/relations/?query={query}"
+        if is_property:
+            url = f"http://141.57.8.18:9199/freebase/properties/?query={query}"
         else:
-            url = f"http://141.57.8.18:9199/entities/?query={query}"
+            url = f"http://141.57.8.18:9199/freebase/entities/?query={query}"
         headers = {'accept': 'application/json'}
         response = requests.get(url, headers=headers)
         
@@ -81,7 +81,7 @@ def get_freebase_entities(query: str, is_relation: bool) -> list:
 def el_freebase(ne_list: str) -> list:
     """Performs entity linking to Freebase based on the provided list of named entity strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
     nel_list = []
-    N = 5
+    N = 1
     for ne in ne_list[:N]:
         entities = get_freebase_entities(ne, False)
         for entity in entities:
@@ -98,7 +98,7 @@ def el_freebase(ne_list: str) -> list:
 def rel_freebase(rel_list: str) -> list:
     """Performs relation linking to Freebase based on the provided list of relations strings. Returns list of dict with linking candidates: [{"label": "URI"}]"""
     nel_list = []
-    N = 5
+    N = 1
     for rel in rel_list[:N]:
         relations = get_freebase_entities(rel, True)
         for relation in relations:

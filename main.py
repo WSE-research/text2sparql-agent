@@ -3,7 +3,7 @@ from typing import List
 # from services.llm_agent import LLMAgent
 from services.llm_agent_dbpedia import LLMAgentDBpedia
 from services.llm_agent_corporate import LLMAgentCorporate
-
+from services.llm_agent_freebase import LLMAgentFreebase
 
 __version__ = "0.1.0"
 
@@ -15,11 +15,13 @@ app = FastAPI(
 
 KNOWN_DATASETS: List[str] = [
     "https://text2sparql.aksw.org/2025/dbpedia/",
-    "https://text2sparql.aksw.org/2025/corporate/"
+    "https://text2sparql.aksw.org/2025/corporate/",
+    "freebase"
 ]
 
 dbpedia_agent = LLMAgentDBpedia()
 corporate_agent = LLMAgentCorporate()
+freebase_agent = LLMAgentFreebase()
 
 @app.get("/api")
 async def get_answer(question: str, dataset: str):
@@ -40,6 +42,8 @@ async def get_answer(question: str, dataset: str):
         sparql_query = dbpedia_agent.generate_sparql(question)
     elif "corporate" in dataset:
         sparql_query = corporate_agent.generate_sparql(question)
+    elif "freebase" in dataset:
+        sparql_query = freebase_agent.generate_sparql(question)
     else:
         raise HTTPException(status_code=404, detail="Unknown dataset. Please use one of the known datasets.")
     

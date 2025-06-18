@@ -12,10 +12,10 @@ import os
 import json
 import logging
 
-from services.llm_utils import el, Plan, get_expected_answer_type
+from services.llm_utils import el_freebase, rel_freebase, Plan, get_expected_answer_type
 from services.ld_utils import execute, post_process
 from model.agent import PlanExecute
-from prompts.dbpedia import (
+from prompts.freebase import (
     system_prompt,
     last_task,
     planner_prompt_dct,
@@ -33,8 +33,9 @@ class LLMAgentFreebase:
             self,
             openai_model_name: str = "gpt-4o-2024-05-13",
             embedding_model_name: str = "intfloat/multilingual-e5-large",
+            use_icl: bool = False,
             return_N: int = 5,
-            tools: List = [el],
+            tools: List = [el_freebase, rel_freebase],
             lang: str = "en"
         ):
         """Initialize the LLM agent with any required configurations"""
@@ -43,6 +44,7 @@ class LLMAgentFreebase:
         self.lang = lang
         self.embedding_model_name = embedding_model_name
         self.openai_model_name = openai_model_name
+        self.use_icl = use_icl
 
         ### START Initialize embeddings
         model_kwargs = {'device': 'cpu'}
@@ -203,23 +205,26 @@ class LLMAgentFreebase:
             if self.app is None:
                 self._init_workflow()
 
-            results = self.icl_db.similarity_search_with_score(input_question, k=self.return_N)
+            if self.use_icl:
+                results = self.icl_db.similarity_search_with_score(input_question, k=self.return_N)
 
-            example = "--- Successful example for in context learning ---"
+                example = "--- Successful example for in context learning ---"
 
-            for result in results[:self.return_N]:
-                idx = result[0].metadata['seq_num'] - 1
-                question = self.icl_json_data[idx]["question"]
-                sparql = self.icl_json_data[idx]["sparql"]
+                for result in results[:self.return_N]:
+                    idx = result[0].metadata['seq_num'] - 1
+                    question = self.icl_json_data[idx]["question"]
+                    sparql = self.icl_json_data[idx]["sparql"]
 
-                example += f"""
+                    example += f"""
 
-        Input: {question}
-        Output: {sparql}
+            Input: {question}
+            Output: {sparql}
 
-        """
-                
-                example += "--- End example ---"
+            """
+                    
+                    example += "--- End example ---"
+            else:
+                example = ""
 
             agent_result = self.app.invoke(
                 {"input": input_question, "chat_history": [SystemMessage(content=f"""{system_prompt[self.lang]}      
