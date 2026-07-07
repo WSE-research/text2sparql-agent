@@ -1,0 +1,59 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper referenced under preferred-citation."
+type: software
+title: "mKGQAgent -- Multilingual Text-to-SPARQL Agent for Question Answering over Knowledge Graphs"
+authors:
+  - family-names: Perevalov
+    given-names: Aleksandr
+    orcid: "https://orcid.org/0000-0002-6803-3357"
+  - family-names: Both
+    given-names: Andreas
+    orcid: "https://orcid.org/0000-0002-9177-5463"
+repository-code: "https://github.com/WSE-research/text2sparql-agent"
+keywords:
+  - "LLM agents"
+  - "Text2SPARQL"
+  - "knowledge graph question answering"
+  - "semantic parsing"
+  - "SPARQL"
+  - "multilingual"
+preferred-citation:
+  type: conference-paper
+  title: "Text-to-SPARQL Goes Beyond English: Multilingual Question Answering Over Knowledge Graphs through Human-Inspired Reasoning"
+  authors:
+    - family-names: Perevalov
+      given-names: Aleksandr
+      orcid: "https://orcid.org/0000-0002-6803-3357"
+    - family-names: Both
+      given-names: Andreas
+      orcid: "https://orcid.org/0000-0002-9177-5463"
+  editors:
+    - family-names: "Gôlo"
+      given-names: Marcos
+    - family-names: Marx
+      given-names: Edgard
+    - family-names: "Viviurka do Carmo"
+      given-names: Paulo
+  collection-title: "Proceedings of the First International TEXT2SPARQL Challenge co-located with Text2KG at ESWC 2025, Portorož, Slovenia, June 1, 2025"
+  collection-type: proceedings
+  conference:
+    name: "First International TEXT2SPARQL Challenge (TEXT2SPARQL 2025)"
+    city: "Portorož"
+    country: SI
+    date-start: 2025-06-01
+    date-end: 2025-06-01
+  publisher:
+    name: "CEUR-WS.org"
+  volume: 4094
+  start: 77
+  end: 93
+  year: 2025
+  issn: "1613-0073"
+  url: "https://ceur-ws.org/Vol-4094/paper6.pdf"
+  identifiers:
+    - type: other
+      value: "arXiv:2507.16971"
+      description: "arXiv preprint"
+    - type: doi
+      value: "10.48550/arXiv.2507.16971"
+      description: "DOI of the arXiv preprint"
