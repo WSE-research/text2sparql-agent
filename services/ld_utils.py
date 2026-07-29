@@ -1,8 +1,11 @@
 import json
+import logging
 import requests
 from fuzzywuzzy import fuzz
 from SPARQLWrapper import SPARQLWrapper, JSON
 from rdflib.plugins.sparql.parser import parseQuery
+
+logger = logging.getLogger(__name__)
 
 
 prefixes_list = [
@@ -41,8 +44,10 @@ def search_entity(query: str, lang: str = "en", similarity: int = 90, search_lim
             else:
               ne_list.append({wdt_label: f"http://www.wikidata.org/entity/{wdt_id}"})
     return ne_list, rel_list
-  except Exception as e:
-    print(str(e))
+  except Exception:
+    # Logged with a traceback: swallowing this silently is what hid a
+    # NameError in get_relations for a long time.
+    logger.exception("entity search failed for query %r", query)
     return [], []
 
 def falcon_rel(query: str):
@@ -58,8 +63,8 @@ def falcon_rel(query: str):
     for entity in data["entities_wikidata"]:
        ent_list.append({entity["label"]: entity["URI"]})
     return rel_list, ent_list
-  except Exception as e:
-    print(str(e))
+  except Exception:
+    logger.exception("Falcon relation lookup failed for query %r", query)
     return [], []
   
 def extract_code_blocks(text):
@@ -103,8 +108,8 @@ def execute(query: str, endpoint_url: str = 'http://141.57.8.18:40201/dbpedia/sp
         response = sparql.query().convert()
         return response
     except Exception as e:
+        logger.exception("SPARQL execution failed against %s", endpoint_url)
         e = str(e)
-        print(e)
         if 'MalformedQueryException' in e or 'bad formed' in e:
             return {'error': str(e)}
         return  {'error': str(e)}
@@ -116,8 +121,12 @@ def get_relations(uri):
   }}
   """
 
-  results = transform_sparql_json_to_dataframe(execute(sparql))
-  if results.shape[0] > 0:
-    return [res.split("/")[-1] for res in results.uri]
-  else:
-    return []
+  # Read the SPARQL JSON result directly. `execute` returns either the parsed
+  # response or {'error': ...}, so a failed query yields no bindings here.
+  response = execute(sparql)
+  bindings = (response or {}).get("results", {}).get("bindings", [])
+  return [
+    binding["uri"]["value"].split("/")[-1]
+    for binding in bindings
+    if binding.get("uri", {}).get("value")
+  ]
