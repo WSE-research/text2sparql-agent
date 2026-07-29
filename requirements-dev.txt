@@ -1,0 +1,10 @@
+# Dependencies needed to run the unit tests. The tests cover the pure logic in
+# services/ld_utils.py, so the heavy ML stack from requirements.txt (torch,
+# sentence-transformers, faiss) is deliberately not needed here — that keeps
+# the PR gate fast. requirements.txt itself is exercised by the docker job.
+pytest>=8.0
+pytest-cov>=5.0
+requests
+fuzzywuzzy
+SPARQLWrapper
+rdflib

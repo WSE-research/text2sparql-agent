@@ -1,0 +1,44 @@
+# Runs on pull requests, which build-deploy.yml does not: that workflow only
+# fires on push to main, so until now nothing checked a change before it was
+# merged and deployed.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+          cache: pip
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Run tests with coverage
+        run: |
+          pytest tests/ -v \
+            --cov=services --cov-report=term-missing --cov-report=xml
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: warn
+
+  # requirements.txt is unpinned, so a fresh resolve can start failing without
+  # anything in this repository changing. Building the image is what catches
+  # that — and it also proves the app still imports.
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build the image
+        run: docker build --tag kgqagent-text2sparql:ci .
